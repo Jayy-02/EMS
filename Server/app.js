@@ -1,38 +1,55 @@
 import express from "express";
 import cors from "cors";
+import mongoose from "mongoose";
 import mongodb, { MongoClient } from "mongodb";
 import bodyParser from "body-parser";
-import * as readline from "node:readline/promises";
-import { stdin as input, stdout as output } from "node:process";
+// import * as readline from "node:readline/promises";
+// import { stdin as input, stdout as output } from "node:process";
 const app = express();
-const port = 3000;
+const port = 8000;
 
 app.use(cors());
+app.use(bodyParser.json());
 
-const uri = "mongodb://localhost:27017/";
-const client = new MongoClient(uri);
+mongoose
+  .connect("mongodb://localhost:27017/")
+  .then(() => {
+    console.log("Mongodb connected successfully")
 
-client
-  .connect()
-  .then(() => console.log("Mongodb connected successfully"))
-  .catch(() => console.log("Failed to connect"));
+    const dataSchema = new mongoose.Schema({
+      name: String,
+      email: String,
+      password: String,
+    });
 
-const db = client.db("Employee_Data");
+    const DataModel = mongoose.model("Data", dataSchema);
 
-const info = db.collection("Personal_Details");
+    app.post("/api/data", async (req, res) => {
+      const { name, email, password } = req.body;
+      const newData = new DataModel({name, email, password})
+      try {
+        await newData.save()
+        res.status(200).send({
+          status: 'success',
+          message: 'Data saved successfully'
+        })
+      }
+      catch (error) {
+        res.status(500).send({
+          status: 'error',
+          message: 'Error saving data'
+        })
+      }
+    });
 
-info
-  .insertOne({ name: "Val", State: "Edo" })
-  .then(() => console.log("Database has been updated"))
-  .catch((error) => console.log(error + " Failed to update"));
-
-async function main() {}
-
-app.get("/", (req, res) => {
-  let response = `Hello World <br>`;
-  res.send(response);
-});
+    app.get("/", (req, res) => {
+      res.send("respond");
+    });
+  })
+  .catch(() => {
+    console.log("Failed to connect")
+  });
 
 app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`);
+  console.log(`App listening at http://localhost:${port}`);
 });
