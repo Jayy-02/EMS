@@ -1,0 +1,27 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "Backend Folder",
+  "main": "index.js",
+  "scripts": {
+    "test": "run",
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "EMS"
+  },
+  "keywords": [
+    "node"
+  ],
+  "author": "Valerie",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0",
+    "mongodb": "^6.15.0",
+    "mongoose": "^8.14.2",
+    "twilio": "^5.5.1"
+  },
+  "type": "module"
+}
